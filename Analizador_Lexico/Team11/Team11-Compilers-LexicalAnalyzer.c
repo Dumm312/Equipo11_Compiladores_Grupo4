@@ -1,6 +1,6 @@
-/*Analizador Léxico
- *Versión v3.3.0
-*/
+/**********Analizador Léxico*************
+ ***********Versión v3.3.1***************
+***/
 /* Importación de la biblioteca estándar de entrada/salida. */
 #include<stdio.h>
 /* Importación de la biblioteca estándar. */
@@ -67,7 +67,7 @@ int main(int argc, char *argv[]){
 
         //Caso especial para cuando la expresión inicia en punto
         if( exp[cont1][0] == 46 ){
-            printf("\n\t La cadena est%c formada por:\n\t\tp ", 160);
+            printf("\n\t La cadena est%c formada por:\n\t\tP ", 160);
             if( len1 == 1 ){//Si solo es el punto es invalido 
 				printf("X<-- Se esperaba '0..9'--\n", 162, 160); 
 				tokens_invalidos++;
@@ -75,9 +75,9 @@ int main(int argc, char *argv[]){
 			} 
             for( int j = 1; j < len1-1; j++){ //Ciclo para validar los digitos
                 if( exp[cont1][j] >= 48 && exp[cont1][j] <=57 ){ 	//Puede haber 1 o más digitos
-					printf("d "); 
+					printf("D "); 
 					if( exp[cont1][j+1] == 61 ){ //Debe terminar en igual
-						printf("i \n\n");
+						printf("I \n\n");
 					}	
 				}else{ 	//No puede tener otro terminal
 					printf("X <-- Se esperaba '0..9','=' \n", 162, 160);
@@ -118,10 +118,10 @@ int main(int argc, char *argv[]){
 				if((exp[cont1][i]==43)||(exp[cont1][i]==45)||(exp[cont1][i]==32)||((exp[cont1][i]>=48)&&(exp[cont1][i]<=57))){ //La cadena puede empezar con un n?mero o signo + o -
 					if((exp[cont1][i]==43)||(exp[cont1][i]==45) || (exp[cont1][i] == 32)){ //Si el primer digito es un + o - se pasa al siguiente caracter de la cadena
 						i++;
-						printf(" s ");
+						printf(" S ");
 						if((exp[cont1][i]>=48)&&(exp[cont1][i]<=57)){ //Comprobacion de digito
 							while((exp[cont1][i]>=48)&&(exp[cont1][i]<=57)){
-								printf("d ");
+								printf("D ");
 								i++;
 							}
 						}else{
@@ -132,7 +132,7 @@ int main(int argc, char *argv[]){
 					}else{ //Si no se inicia con signo debe iniciar con digito
 						if((exp[cont1][i]>=48)&&(exp[cont1][i]<=57)){ //Comprobacion de digito
 							while((exp[cont1][i]>=48)&&(exp[cont1][i]<=57)){
-								printf("d ");
+								printf("D ");
 								i++;
 							}
 						}else{
@@ -150,11 +150,11 @@ int main(int argc, char *argv[]){
 				if(err){
 					//printf("entra");
 					if((exp[cont1][i]==46)){ //validar la presencia del punto
-						printf("p ");
+						printf("P ");
 						i++;
 						if((exp[cont1][i]>=48)&&(exp[cont1][i]<=57)){		//validar la presecia de digito
 							while((exp[cont1][i]>=48)&&(exp[cont1][i]<=57)){
-								printf("d ");
+								printf("D ");
 								i++;
 								}
 						}else{
@@ -173,7 +173,7 @@ int main(int argc, char *argv[]){
 				if(err){
 					for(i; i<len1-1;i++){
 						if((exp[cont1][i]==42)||(exp[cont1][i]==43)||(exp[cont1][i]==45)||(exp[cont1][i]==47)){ //Compruebasi es operador
-							printf("o ");
+							printf("O ");
 							i++;
 							if((exp[cont1][i]==40)||((exp[cont1][i]>=48)&&(exp[cont1][i]<=57))){ //Comprueba si es parentesis izquierdo o d?gito
 								if((exp[cont1][i]==40)){//hay parentesis izquierdo
@@ -181,7 +181,7 @@ int main(int argc, char *argv[]){
 									i++;
 									if((exp[cont1][i]==43)||(exp[cont1][i]==45)||((exp[cont1][i]>=48)&&(exp[cont1][i]<=57))){ //Comprueba si hay + o - o d?gito
 										if((exp[cont1][i]==43)||(exp[cont1][i]==45)){ //Comprueba si es un + o -
-											printf("s ");
+											printf("S ");
 											i++;
 											if(!(exp[cont1][i]>=48)&&(exp[cont1][i]<=57)){ //Si no continua un digito estaria mal
 												printf("X<-- Se esperaba '0..9'--");
@@ -192,15 +192,15 @@ int main(int argc, char *argv[]){
 										}
 										if((exp[cont1][i]>=48)&&(exp[cont1][i]<=57)){ //Comprueba si s? es un digito
 											while((exp[cont1][i]>=48)&&(exp[cont1][i]<=57)){
-											printf("d ");
+											printf("D ");
 											i++;
 											}
 											if((exp[cont1][i]==46)){ //Comprueba si hay un punto
-												printf("p ");
+												printf("P ");
 												i++;
 												if((exp[cont1][i]>=48)&&(exp[cont1][i]<=57)){ //Despues del punto debe haber m?s digitos
 													while((exp[cont1][i]>=48)&&(exp[cont1][i]<=57)){
-														printf("d ");
+														printf("D ");
 														i++;
 													}
 													if((exp[cont1][i]==41)){ //hay parentesis de cierre
@@ -235,7 +235,7 @@ int main(int argc, char *argv[]){
 								}else{
 									if((exp[cont1][i]>=48)&&(exp[cont1][i]<=57)){
 										while((exp[cont1][i]>=48)&&(exp[cont1][i]<=57)){ // comprueba si hay numeros
-										printf("d ");
+										printf("D ");
 										i++;
 										}
 									}else{
@@ -246,11 +246,11 @@ int main(int argc, char *argv[]){
 									}
 									
 									if((exp[cont1][i]==46)){ //Comprueba si hay un punto seguido de los digitos
-										printf("p ");
+										printf("P ");
 										i++;
 										if((exp[cont1][i]>=48)&&(exp[cont1][i]<=57)){ //Despues del punto debe haber m?s digitos
 											while((exp[cont1][i]>=48)&&(exp[cont1][i]<=57)){
-												printf("d ");
+												printf("D ");
 												i++;
 											}
 											i--;
@@ -285,7 +285,7 @@ int main(int argc, char *argv[]){
 					if(exp[cont1][i]!=61){
 							printf("X<-- Se esperaba '='\n", 162, 160);
 						}else{
-							printf("i \n\n");
+							printf("I \n\n");
 	
 						}	
 				}
