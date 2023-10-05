@@ -1,31 +1,39 @@
+/*Analizador L茅xico
+ *Versi贸n v3.3.0
+*/
+/* Importaci贸n de la biblioteca est谩ndar de entrada/salida. */
 #include<stdio.h>
+/* Importaci贸n de la biblioteca est谩ndar. */
 #include<stdlib.h>
+/* Importaci贸n de la biblioteca que contiene el tipo de datos booleano. */
 #include<stdbool.h>
+/* Importaci贸n de la biblioteca de cadenas. */
 #include<string.h>
 
 int main(int argc, char *argv[]){
-	FILE *archivo;							//Declaraci髇 de un puntero a un archivo
+	FILE *archivo;							//Declaraci贸n de un puntero a un archivo
     char exp[100][1000]; 					// Matriz para almacenar las lineas del archivo
-    char linea[10000];    					// Tama駉 del buffer para una linea
+    char linea[10000];    					// Tama帽o del buffer para una linea
 
     archivo = fopen("archivo.txt", "r");	//Apertura del Archivo "archivo.txt" en modo lectura	
 
-	/*Validaci髇 para verificar si se pudo abrir el archivo en caso contrario
+	/*Validaci贸n para verificar si se pudo abrir el archivo en caso contrario
 	mostrara el mensaje de "No se pudo abrir el archivo"*/
 	
+
     if (archivo == NULL) {
         printf("No se pudo abrir el archivo.\n");
         return 1;							//Se regresa 1 para indicar un error
     }
     
-    //Declaraci髇 de Variables a Usar
+    //Declaraci贸n de Variables a Usar
 	int cont1=0, cont2=0, len1, contfor;
 	bool b1=true, b2=false, err=true;
 	int op=100, igu=0, parizq=0, parder=0;
-	int i, i1,tokens_invalidos=0;											//Variables y contador para tokens invalidos
+	int i, i1,tokens_invalidos=0,bandera=1;											//Variables y contador para tokens invalidos
 	int contdig, contsigno, contoper, contpunto, contL, contR, contigual;	//Contadores para cada token
 	
-	//Imprime el mensaje de bienvenida y condiciones de Aceptaci髇 de Cadenas
+	//Imprime el mensaje de bienvenida y condiciones de Aceptaci贸n de Cadenas
 	printf(" =========================================================================================== \n");
 	printf("|------------------------------BIENVENIDX al analizador l%cxico------------------------------|\n", 130);
 	printf("|\t\t\t\t ***Puntos a considerar***\t\t\t\t    |\n");
@@ -38,41 +46,58 @@ int main(int argc, char *argv[]){
 	
 	//Bucle Principal el cual se ejecuta por ahora 100 veces
     while(op--){
-    	int cont1 = 0; // 韓dice para la fila en la matriz exp
+    	int cont1 = 0; // 铆ndice para la fila en la matriz exp
 
-	    // Bucle que se ocupa para leer y procesar cada l韓ea del archivo
+	    // Bucle que se ocupa para leer y procesar cada l铆nea del archivo
 	    while (fgets(linea, sizeof(linea), archivo)) {
-	        // Buscar el salto de l韓ea en la l韓ea
+	        // Buscar el salto de l铆nea en la l铆nea
 	        char *salto = strchr(linea, '\n');
 
 	        if (salto != NULL) {
-	            // Reemplazar el salto de l韓ea con un terminador nulo
+	            // Reemplazar el salto de l铆nea con un terminador nulo
 	            *salto = '\0';
 
-	            // Copiar la l韓ea a la matriz exp en la fila i
+	            // Copiar la l铆nea a la matriz exp en la fila i
 	            strcpy(exp[cont1], linea);
 	            len1=strlen(exp[cont1]);
 	            if( len1 == 0 ){ break; }
-	            printf("============================================================================================");
+	            printf("\n============================================================================================");
 	            printf("\n\t\t\t\tEJECUTANDO LA EXPRESI%cN #%d\n", 224, cont1+1);
 	            printf( "La expresi%cn es: %s\n", 162, exp[cont1] );
 
-        //Caso especial para cuando la expresi髇 inicia en punto
+        //Caso especial para cuando la expresi贸n inicia en punto
         if( exp[cont1][0] == 46 ){
             printf("\n\t La cadena est%c formada por:\n\t\tp ", 160);
-            if( len1 == 1 ){ printf("X--0. Expresi%cn inv%clida--\n", 162, 160); break; } //Si solo es el punto es invalido
-            for( int j = 1; j < len1-1; j++){
-                if( exp[cont1][j] >= 48 && exp[cont1][j] <=57 ){ printf("d "); } //Puede haber 1 o m醩 digitos
-                else{ printf("X--0. Expresi%cn inv%clida--\n", 162, 160); break; } //No puede tener otro terminal
-            }
-            if( exp[cont1][len1-1] == 61 ){ printf("i \n\n"); }
-            else{ printf("X--0. Expresi%cn inv%clida--   no termina en igual\n", 162, 160); break; } //Debe terminar en igual
+            if( len1 == 1 ){//Si solo es el punto es invalido 
+				printf("X<-- Se esperaba '0..9'--\n", 162, 160); 
+				tokens_invalidos++;
+				break; 
+			} 
+            for( int j = 1; j < len1-1; j++){ //Ciclo para validar los digitos
+                if( exp[cont1][j] >= 48 && exp[cont1][j] <=57 ){ 	//Puede haber 1 o m谩s digitos
+					printf("d "); 
+					if( exp[cont1][j+1] == 61 ){ //Debe terminar en igual
+						printf("i \n\n");
+					}	
+				}else{ 	//No puede tener otro terminal
+					printf("X <-- Se esperaba '0..9','=' \n", 162, 160);
+					tokens_invalidos++;
+					break;
+					} 
+			
+			} 
+			if( exp[cont1][len1-1] != 61 ){ //Debe terminar en igual
+				printf("X--Se esperaba '=' \n", 162, 160);
+				tokens_invalidos++;
+				} 	
+			break;
         }
+        
 
-    	if(len1<8){ //La cadena m醩 corta que acepta es con longitud=8, por lo que si es m醩 chica no se acepta
+    	if(len1<8){ //La cadena m谩s corta que acepta es con longitud=8, por lo que si es m谩s chica no se acepta
 		}
 		else{
-                //Si se acepta la cadena, comienza a contar la cantidad de iguales (s髄o debe haber uno al final de la expresi髇),
+                //Si se acepta la cadena, comienza a contar la cantidad de iguales (s贸lo debe haber uno al final de la expresi贸n),
                 //parentesis izquierdos y derechos, de estos debe haber la misma cantidad
 			for (i1=0; i1<len1; i1++){
 				if(exp[cont1][i1]==61){
@@ -87,19 +112,6 @@ int main(int argc, char *argv[]){
 			}
 			printf("\nSe encontraron %i iguales, %i parentesis izquierdos y %i parentesis derechos\n", igu, parizq, parder);
 
-			//Se delimita el rango en c骴igo ASCII del lenguaje aceptado
-			//El 鷏timo digito no es igual, hay m醩 o menos de un igual, no hay igual cantidad de par閚tesis izquierdos que derechos
-			//no es un d韌ito del 0 al 9, no es ni signo '+' o signo '-' o espacio
-			if((exp[cont1][len1-1]!=61)||(igu!=1)||(parizq!=parder)||(!(((exp[cont1][0]>=48)&&(exp[cont1][0]<=57))||(exp[cont1][0]==43)||(exp[cont1][0]==45)||(exp[cont1][0]==32)))){
-				//if( exp[cont1][len1-1] != 61 ){ printf("La expresi%cn no termina en igual\n\n", 162); }
-				if( igu == 0 ){ printf("C%cmo no hay signo igual la expresi%cn es err%cnea\n\n", 162, 162, 162); }
-                if( igu > 1){ printf("C%cmo hay mas de un igual la expresi%cn es err%cnea\n\n", 162, 162, 162); }
-                if( parizq != parder ){ printf("No hay igual cantidad de parentesis que abren y de parentesis que cierran\n\n"); }
-                if( !(((exp[cont1][0]>=48)&&(exp[cont1][0]<=57))||(exp[cont1][0]==43)||(exp[cont1][0]==45)||(exp[cont1][0]==32)) ){ printf("No inicia con un dato v%clido\n\n", 160); }
-
-				printf("X<--1. Expresi%cn inv%clida-- \n", 162, 160);
-				tokens_invalidos++;
-			}else{
 				i=0;
 				err=true; //Mientras que err sea igual a 1 no habr? error
 				printf("\n\t\t\t\t La cadena est%c formada por:\n\n\t\t", 160);
@@ -113,7 +125,7 @@ int main(int argc, char *argv[]){
 								i++;
 							}
 						}else{
-							printf("X--2. Expresi%cn inv%clida-- \n", 162, 160);
+							printf("X<-- Se esperaba '0..9'-- \n", 162, 160);
 							err=false;
 							tokens_invalidos++;
 						}
@@ -124,36 +136,40 @@ int main(int argc, char *argv[]){
 								i++;
 							}
 						}else{
-							printf("X--3. Expresi%cn inv%clida-- \n", 162, 160);
+							printf("X<-- Se esperaba '0..9'-- \n", 162, 160);
 							err=false;
 							tokens_invalidos++;
 							}
 						}
-				}
-				else{
-					printf("X--4. Expresi%cn inv%clida-- \n", 162, 160);
+				}else{
+					printf("X<--Se esperaba '+', '-', '0..9'-- \n", 162, 160);
 					err=false;
 					tokens_invalidos++;
 				}
+				
 				if(err){
 					//printf("entra");
-					if((exp[cont1][i]==46)){
+					if((exp[cont1][i]==46)){ //validar la presencia del punto
 						printf("p ");
 						i++;
-						if((exp[cont1][i]>=48)&&(exp[cont1][i]<=57)){
+						if((exp[cont1][i]>=48)&&(exp[cont1][i]<=57)){		//validar la presecia de digito
 							while((exp[cont1][i]>=48)&&(exp[cont1][i]<=57)){
 								printf("d ");
 								i++;
 								}
 						}else{
+							printf("X<-- Se esperaba '0..9'--");
 							err=false;
 							tokens_invalidos++;
 						}
 					}else{
+						printf("X<-- Se esperaba '.'--");
 						err=false;
 						tokens_invalidos++;
 					}
 				}
+				//continua con el operador
+				
 				if(err){
 					for(i; i<len1-1;i++){
 						if((exp[cont1][i]==42)||(exp[cont1][i]==43)||(exp[cont1][i]==45)||(exp[cont1][i]==47)){ //Compruebasi es operador
@@ -168,6 +184,7 @@ int main(int argc, char *argv[]){
 											printf("s ");
 											i++;
 											if(!(exp[cont1][i]>=48)&&(exp[cont1][i]<=57)){ //Si no continua un digito estaria mal
+												printf("X<-- Se esperaba '0..9'--");
 												err=false;
 												tokens_invalidos++;
 												break;
@@ -190,31 +207,44 @@ int main(int argc, char *argv[]){
 														printf("R ");
 														continue;
 													}else{
+														printf("X<-- Se esperaba ')'--");
 														err=false; //Si no se cierran los parentesis estaria mal
 														tokens_invalidos++;
 														break;
 													}
 												}else{
+													printf("X<-- Se esperaba '0..9'--");
 													err=false;
 													tokens_invalidos++;
 													break;
 												}
 											}else{
+												printf("X<-- Se esperaba '.'--");
 												err=false;
 												tokens_invalidos++;
 												break;
 											}
 										}
 									}else{
+										printf("X<-- Se esperaba '+', '-' , '0..9'--");
 										err=false;
 										tokens_invalidos++;
 										break;
 									}
+									//No es izquierdo es numero
 								}else{
-									while((exp[cont1][i]>=48)&&(exp[cont1][i]<=57)){ // comprueba si hay numeros
+									if((exp[cont1][i]>=48)&&(exp[cont1][i]<=57)){
+										while((exp[cont1][i]>=48)&&(exp[cont1][i]<=57)){ // comprueba si hay numeros
 										printf("d ");
 										i++;
+										}
+									}else{
+										printf("X<-- Se esperaba '0..9'--");
+										err=false;
+										tokens_invalidos++;
+										break;
 									}
+									
 									if((exp[cont1][i]==46)){ //Comprueba si hay un punto seguido de los digitos
 										printf("p ");
 										i++;
@@ -225,38 +255,40 @@ int main(int argc, char *argv[]){
 											}
 											i--;
 										}else{
+											printf("X<-- Se esperaba '0..9'--");
 											err=false;
 											tokens_invalidos++;
 											break;
 										}
 									}else{
+										printf("X<-- Se esperaba '.'--");
 										err=false;
 										tokens_invalidos++;
 										break;
 									}
 								}
 							}else{
+								printf("X<-- Se esperaba '(', '0..9'--");
 								err=false;
 								tokens_invalidos++;
 								break;
 							}
 
 						}else{
+							printf("X<-- Se esperaba '+','-','/','*' --");
 							err=false;
 							tokens_invalidos++;
 							break;
 						}
+						
 					}
-					if(err){
-						printf("i \n\n");
-					}else{
-						printf("X--5. Expresi%cn inv%clida-- \n", 162, 160);
-
-					}
-				}else{
-					printf("X--6. Expresi%cn inv%clida-- \n", 162, 160);
+					if(exp[cont1][i]!=61){
+							printf("X<-- Se esperaba '='\n", 162, 160);
+						}else{
+							printf("i \n\n");
+	
+						}	
 				}
-			}
 		}
     	cont1++;
     	igu=0, parizq=0, parder=0;			//Reiniciamos para cada que termina un ciclo de lectura y principal
@@ -265,10 +297,9 @@ int main(int argc, char *argv[]){
 	   		}
 	    }
 	}
-	printf("\n\n La cantidad de tokens invalidos son: %i \n",tokens_invalidos);
-    fclose(archivo);
-    system("pause");
+	printf("\n\n La cantidad de tokens invalidos son: %i \n",tokens_invalidos);	//Imprimimos los tokens invalidos
+    fclose(archivo);															//cerramos el apuntadro del archivo
+    system("pause");															//Evita el cierre de la terminal
 	return 0;
     
 }
-
