@@ -1,6 +1,13 @@
 /**********Analizador Léxico*************
- ***********Versión v3.3.1***************
-***/
+************Versión v3.3.1***************
+** Integrantes:
+**
+**Escudero Bohórquez Julio
+**Jimenez Cervates Angel Mauricio
+**Jiménez Hernández Diana 
+**Medrano Miranda Daniel Ulises
+** 
+****/
 /* Importación de la biblioteca estándar de entrada/salida. */
 #include<stdio.h>
 /* Importación de la biblioteca estándar. */
