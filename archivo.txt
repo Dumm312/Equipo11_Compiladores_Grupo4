@@ -1,0 +1,39 @@
+ENTERO b = 1
+ENTERO var=0
+#Las palabras reservadas son ENTERO que su equivalente en ejemplo  en C seria la declaración de variables int
+ENTERO a = 9
+
+
+#Declaración de variables para entrada del usuario
+ENTRADA C
+
+ENTERO c=b+a
+
+#Ciclo while
+MIENTRAS a != 0 REPETIR
+#Condicional IF
+	SI a <= 10 ENTONCES
+#Mandar a imprimir en pantalla
+	IMPRIMIR "La variable de entrada es + C"
+	FINSI
+FINMIENTRAS
+
+SI a <= 10 ENTONCES
+SI a <= 10 ENTONCES
+#Mandar a imprimir en pantalla
+IMPRIMIR "La variable de entrada es + C"
+FINSI
+#Mandar a imprimir en pantalla
+IMPRIMIR "La variable de entrada es + C"
+FINSI
+
+#Tipo Rollback en una base de datos
+
+GOTO initio
+
+
+#Aqui aplica como un checkpoint como en una Base de Datos
+ETIQUETA initio
+
+#Comentarios
+#hola
