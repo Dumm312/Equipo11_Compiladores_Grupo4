@@ -1,7 +1,8 @@
 import sys
 from lexico import *
 from semantico import *
-
+from ejecutor import *
+ejecutor = Ejecutor()
 semantico = Semantico()
 class Sintatico:
     def __init__(self, lexico):
@@ -11,6 +12,7 @@ class Sintatico:
         self.siguienteToken()
         # Se tiene que llamar dos veces para inicializar actual y asomar
         self.siguienteToken()
+        self.variables = {}
 
     # Regresar true si el token actual es igual (del mismo tipo)
     def revisarToken(self, tipo):
@@ -60,7 +62,7 @@ class Sintatico:
     def sentencia(self):
         # ‘SI’ comparación ‘ENTONCES’ nl (sentencia)* ‘FIN_SI’
         if self.revisarToken(TipoToken.SI):  # revisarToken (SI/MIENTRAS) y regresa true
-            print("SI ", end='')
+            # print("SI ", end='')
             self.siguienteToken()
             self.comparacion()
 
@@ -75,16 +77,18 @@ class Sintatico:
 
         # ‘IMPRIMIR’  (expr | CADENA) == 'IMPRIMIR' expr | 'IMPRIMIR' CADENA
         elif self.revisarToken(TipoToken.IMPRIMIR):
-            print("IMPRMIR ", end='')
+            # print("IMPRMIR ", end='')
             self.siguienteToken()
             if self.revisarToken(TipoToken.CADENA):
+                mensaje1 = self.tokenActual.lexema[1:-1]  # Eliminar las comillas
                 self.siguienteToken()
             else:
                 self.expr()
+            ejecutor.imprimir({"mensaje": mensaje1})
 
         # ‘MIENTRAS’ comparación ‘REPETIR’ nl (sentencia)* ‘FIN_MIENTRAS’
         elif self.revisarToken(TipoToken.MIENTRAS):
-            print("MIENTRAS ", end='')
+            # print("MIENTRAS ", end='')
             self.siguienteToken()
             self.comparacion()
             self.match(TipoToken.REPETIR)
@@ -95,7 +99,7 @@ class Sintatico:
 
         # 'LABEL' ID (Etiqueta)
         elif self.revisarToken(TipoToken.ETIQUETA):
-            print("ETIQUETA ", end='')
+            # print("ETIQUETA ", end='')
             self.siguienteToken()
             # Checar que la etiqueta no exista ya
             semantico.revisarLabelDeclarada(self.tokenActual.lexema)
@@ -104,39 +108,40 @@ class Sintatico:
 
             # 'GOTO' ID (salto)
         elif self.revisarToken(TipoToken.GOTO):
-            print("GOTO ", end='')
+            # print("GOTO ", end='')
             self.siguienteToken()
             semantico.agregarLabelGoto(self.tokenActual.lexema)
             self.match(TipoToken.ID)
 
         # 'ENTERO' ID '=' expr == ['ENTERO' ID IGUAL expr]
         elif self.revisarToken(TipoToken.ENTERO):
-            print("ENTERO ", end='')
+            # print("ENTERO ", end='')
             self.siguienteToken()
-
+            nombre_variable1 = self.tokenActual.lexema
             semantico.agregarVariable(self.tokenActual.lexema)
 
             self.match(TipoToken.ID)
             self.match(TipoToken.IGUAL)
-            self.expr()
-
+            valor1 = self.expr()
+            ejecutor.declarar_variable({"nombre": nombre_variable1, "valor": valor1})
         # 'INPUT' ID
         elif self.revisarToken(TipoToken.ENTRADA):
-            print("ENTRADA ", end='')
+            # print("ENTRADA ", end='')
             self.siguienteToken()
-
+            nombre_variable = self.tokenActual.lexema
             semantico.agregarVariable(self.tokenActual.lexema)
+            ejecutor.entrada_usuario({"nombre": nombre_variable})
 
             self.match(TipoToken.ID)
         else:
-            self.abortar("Sentencia no válida en " + self.tokenActual.lexema + "(" + self.tokenActual.token.name + ")")
+            self.abortar(" 1 Sentencia no válida en " + self.tokenActual.lexema + "(" + self.tokenActual.token.name + ")")
 
         # Newline final
         self.nl()
 
     # comparacion::= expr (opComp expr)+
     def comparacion(self):
-        print("COMPARACION ", end='')
+        # print("COMPARACION ", end='')
         self.expr()
         if self.opComp():  # SI True [1 vez]
             self.siguienteToken()
@@ -150,35 +155,53 @@ class Sintatico:
 
     # expr::= termino ((‘+’ | ‘-‘ ) termino)*
     def expr(self):
-        print("EXPRESION ", end='')
-        self.termino()
+        # print("EXPRESION ", end='')
+        resultado = self.termino()
         while self.revisarToken(TipoToken.MAS) or self.revisarToken(TipoToken.MENOS):
+            operador = self.tokenActual.lexema
             self.siguienteToken()
-            self.termino()
+            termino2 = self.termino()
+            if operador == "+":
+                resultado += termino2
+            elif operador == "-":
+                resultado -= termino2
+        return resultado
 
-    # termino::= unario ((‘*’ | ‘/‘ ) unario)+
     def termino(self):
-        print("TERMINO ", end='')
-        self.unario()
+        # print("TERMINO ", end='')
+        resultado = self.unario()
         while self.revisarToken(TipoToken.ASTERISCO) or self.revisarToken(TipoToken.DIAGONAL):
+            operador = self.tokenActual.lexema
             self.siguienteToken()
-            self.unario()
+            unario2 = self.unario()
+            if operador == "*":
+                resultado *= unario2
+            elif operador == "/":
+                resultado /= unario2
+        return resultado
 
-    # unario::= ( ‘+’ | ‘-‘)? primario (cero o una vez)
     def unario(self):
-        print("UNARIO ", end='')
-        if self.revisarToken(TipoToken.MAS) or self.revisarToken(TipoToken.MENOS):  # ? o es + o -
+        # print("UNARIO ", end='')
+        if self.revisarToken(TipoToken.MAS) or self.revisarToken(TipoToken.MENOS):
+            operador = self.tokenActual.lexema
             self.siguienteToken()
-        self.primario()
+            primario = self.primario()
+            if operador == "-":
+                return -primario
+            return primario
+        return self.primario()
 
-    # primario::= NUMERO | ID
     def primario(self):
-        print("PRIMARIO ", end='')
-        if self.revisarToken(TipoToken.NUMERO):  # Numero o ID
+        # print("PRIMARIO ", end='')
+        if self.revisarToken(TipoToken.NUMERO):
+            numero = float(self.tokenActual.lexema)
             self.siguienteToken()
+            return numero
         elif self.revisarToken(TipoToken.ID):
             semantico.revisarVariable(self.tokenActual.lexema)
+            valor = self.variables.get(self.tokenActual.lexema)
             self.siguienteToken()
+            return valor
         else:
             self.abortar("Token inesperado en: " + self.tokenActual.lexema)
 
@@ -191,7 +214,7 @@ class Sintatico:
 
     # nl::= ‘\n’+ (Uno o mas veces)
     def nl(self):
-        print("NUEVA LINEA")
+        # print("NUEVA LINEA")
         self.match(TipoToken.SALTO_LINEA)  # Tiene que estar minimo una vez
         while self.revisarToken(TipoToken.SALTO_LINEA):
             self.siguienteToken()
