@@ -1,0 +1,57 @@
+IMPRIMIR " =========================================================================================== "
+
+IMPRIMIR " |----------------------BIENVENIDX al lenguaje de programacion Quasar-----------------------| "
+
+IMPRIMIR " |            Hecho con un enfoque top-down y es un analizador descendente recursivo        | "
+
+IMPRIMIR " |Integrantes:                                                                              | "
+
+IMPRIMIR " |Escudero Bohorquez Julio                                                                  | "
+
+IMPRIMIR " |Jimenez Cervantes Angel Mauricio                                                          | "
+
+IMPRIMIR " |Jimenez Hernandez Diana                                                                   | "
+
+IMPRIMIR " |Medrano Miranda Daniel Ulises                                                             | "
+
+IMPRIMIR " ===========================================================================================  "
+
+IMPRIMIR " Hola mundo desde Quasar "
+ENTERO b = 1
+ENTERO var=-0.789
+#Las palabras reservadas son ENTERO que su equivalente en ejemplo  en C seria la declaración de variables int
+ENTERO a = 11
+
+
+#Declaración de variables para entrada del usuario
+ENTRADA C
+
+
+#Ciclo while
+MIENTRAS a != 0 REPETIR
+IMPRIMIR " USO DE WHILE - PROXIMAMENTE "
+FINMIENTRAS
+
+#Condicional IF
+	SI a <= 10 ENTONCES
+#Mandar a imprimir en pantalla
+	IMPRIMIR " USO DE IF - PROXIMAMENTE "
+	FINSI
+
+
+#Mandar a imprimir en pantalla
+IMPRIMIR " Comentarios inician con # y son de una sola linea "
+
+
+#Tipo Rollback en una base de datos
+
+GOTO initio
+
+
+#Aqui aplica como un checkpoint como en una Base de Datos
+ETIQUETA initio
+
+#Comentarios
+#hola
+
+ENTRADA prueba
